@@ -26,6 +26,7 @@ exp_token = [
     (r'\;',                     "TITIKOMA"),
     (r'\"',                     "PETIKDUA"),
     (r'\'',                     "PETIKSATU"),
+    (r'\:',                     "TITIKDUA"),
 
     # Operator
     (r'\*\*=',                  "POWAS"),
@@ -73,6 +74,8 @@ exp_token = [
     (r'\breturn\b',             "RETURN"),
     (r'\bfrom\b',               "FROM"),
     (r'\bimport\b',             "IMPORT"),
+    (r'\delete\b',              "DELETE"),
+    (r'\bconstructor\b',        "CONSTRUCTOR"),
     (r'\bwith\b',               "WITH"),
     (r'\bswitch\b',             "SWITCH"),
     (r'\bcase\b',               "CASE"),
