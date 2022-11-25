@@ -1,32 +1,26 @@
 import sys
 import re
 
-# list token untuk syntax ke token
-token_exp = [
+# list terminal: syntax -> terminal
+terminalExp = [
     (r'[ \t]+',                 None),
     (r'//[^\n]*',                None),
     (r'[\n]+[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\'',  None),
     (r'[\n]+[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"',  None),
-
-    # Integer dan String
     (r'\"[^\"\n]*\"',           "STRING"),
     (r'\'[^\'\n]*\'',           "STRING"),
     (r'[\+\-]?[0-9]*\.[0-9]+',  "INT"),
     (r'[\+\-]?[1-9][0-9]+',     "INT"),
     (r'[\+\-]?[0-9]',           "INT"),
-    
-    # Delimiter
-    (r'\(',                     "KBKI"), # Kurung Biasa Kiri
-    (r'\)',                     "KBKA"), # Kurung Biasa Kanan
-    (r'\[',                     "KSKI"), # Kurung Siku Kiri
-    (r'\]',                     "KSKA"), # Kurung Siku Kanan
-    (r'\{',                     "KKKI"), # Kurung Kurawal Kiri
-    (r'\}',                     "KKKA"), # Kurung Kurawal Kanan
+    (r'\(',                     "KBKI"), 
+    (r'\)',                     "KBKA"), 
+    (r'\[',                     "KSKI"), 
+    (r'\]',                     "KSKA"),
+    (r'\{',                     "KKKI"), 
+    (r'\}',                     "KKKA"), 
     (r'\;',                     "TITIKOMA"),
     (r'\:',                     "TITIKDUA"),
     (r'\n',                     "NEWLINE"),
-
-    # Operator
     (r'\*\*',                   "POW"),
     (r'!',                      "NOT"),
     (r'<=',                     "LEQ"),
@@ -50,13 +44,10 @@ token_exp = [
     (r'\*',                     "MUL"),
     (r'/',                      "DIV"),
     (r'%',                      "MOD"),
-    
-    # KEYWORD
     (r'\bvar\b',                "VAR"),
     (r'\blet\b',                "LET"),
     (r'\bcontinue\b',           "CONTINUE"),
     (r'\bbreak\b',              "BREAK"),
-    (r'\.',                     "TITIK"),
     (r'\bformat\b',             "FORMAT"),
     (r'\bconst\b',              "CONST"),
     (r'\bnew\b',                "NEW"),
@@ -71,7 +62,6 @@ token_exp = [
     (r'\delete\b',              "DELETE"),
     (r'\bwith\b',               "WITH"),
     (r'\w+[.]\w+',              "KARTITIK"),
-    (r'\,',                     "COMMA"),
     (r'\bconstructor\b',        "CONSTRUCTOR"),
     (r'\bif\b',                 "IF"),
     (r'\belse\b',               "ELSE"),
@@ -93,6 +83,8 @@ token_exp = [
     (r'\btrue\b',               "TRUE"),
     (r'\bfunction\b',           "FUNC"),
     (r'\breturn\b',             "RETURN"),
+    (r'\.',                     "TITIK"),
+    (r'\,',                     "COMMA"),
     (r'[A-Za-z_][A-Za-z0-9_]*', "ID"),
     (r'\'\'\'[(?!(\'\'\'))\w\W]*\'\'\'',       "MULTILINE"),
     (r'\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"',       "MULTILINE"),
@@ -100,34 +92,34 @@ token_exp = [
 ]
 
 
-# teks ke token
-newA = r'[\n]+[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\''
-newB = r'[\n]+[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"'
+# teks -> terminal
+textToTerm1 = r'[\n]+[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\''
+textToTerm2 = r'[\n]+[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"'
 
-def lexer(teks, token_exp):
+def lexer(text, terminalExp):
     pos = 0 # posisi karakter pada seluruh potongan teks (absolut)
     cur = 1 # posisi karakter relatif terhadap baris tempat dia berada
     line = 1 # posisi baris saat ini
-    tokens = []
-    while pos < len(teks):
-        if teks[pos] == '\n':
+    tknn = []
+    while pos < len(text):
+        if text[pos] == '\n':
             cur = 1
             line += 1
         match = None
 
-        for t in token_exp:
+        for t in terminalExp:
             pattern, tag = t
             if line == 1:
-                if pattern == newA:
+                if pattern == textToTerm1:
                     pattern = r'[^\w]*[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\''
-                elif pattern == newB:
+                elif pattern == textToTerm2:
                     pattern = r'[^\w]*[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"'
             regex = re.compile(pattern)
-            match = regex.match(teks, pos)
+            match = regex.match(text, pos)
             if match:
                 if tag:
                     token = tag
-                    tokens.append(token)
+                    tknn.append(token)
                 break
 
         if not match:
@@ -137,18 +129,18 @@ def lexer(teks, token_exp):
         else:
             pos = match.end(0)
         cur += 1
-    return tokens
+    return tknn
 
-def create_token(sentence):
+def createToken(sentence):
     file = open(sentence)
     char = file.read()
     file.close()
 
-    tokens = lexer(char,token_exp)
+    tknn = lexer(char,terminalExp)
     tokenArray = []
-    for token in tokens:
+    for token in tknn:
         tokenArray.append(token)
 
     return " ".join(tokenArray)
 
-print(create_token("file.txt"))
+#print(createToken("file.txt"))

@@ -1,19 +1,21 @@
-def CYKParser(CNF, string):
-    S = string.split(" ")
-    N = len(S)
+def CYKParser(CNF, string_input):
+    W = string_input.split(" ")
+    N = len(W)
     T = [[set([]) for j in range(N)] for i in range(N)]
 
     for j in range(N):
-        for first, tail in CNF.items():
-            for rule in tail:
-                if len(rule) == 1 and rule[0] == S[j]:
-                    T[j][j].add(first)
+        for head, body in CNF.items():
+            for rule in body:
+                if len(rule) == 1 and rule[0] == W[j]:
+                    T[j][j].add(head)
 
         for i in range(j, -1, -1):
             for k in range(i, j):
-                for first, tail in CNF.items():
-                    for rule in tail:
+                for head, body in CNF.items():
+                    for rule in body:
                         if len(rule) == 2 and rule[0] in T[i][k] and rule[1] in T[k + 1][j]:
-                            T[i][j].add(tail)
-                            print(T[i][j])
+                            T[i][j].add(head)
+
+    # print(T[0][N - 1])
+
     return len(T[0][N - 1]) != 0
