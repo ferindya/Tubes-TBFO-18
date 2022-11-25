@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from fileprocesing import *
+from FA import *
 from  parserCFG import *
 from ConvertCFG import *
 from cykparser import *
