@@ -38,7 +38,6 @@ def isTerminal(string):
         "KSKA",
         "TITIKOMA",
         "NEW",
-        "SET",
         "TYPE",
         "ADD",
         "SUB",
@@ -91,14 +90,14 @@ def isTerminal(string):
         "FROM",
         "RANGE",
         "NEWLINE",
-        "CONST",
         "NULL",
         "TRUE",
         "FALSE",
-        "PETIKSATU",
         "ARROW",
         "PETIKSATU",
-        "PETIKDUA"
+        "PETIKDUA",
+        "ID",
+        "RETURN"
     ]
     
     return string in list_of_terminal
