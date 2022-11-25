@@ -1,4 +1,4 @@
-if(x == 12)
+let x = 10;
 {
-    return 0;
+    let x = 2;
 }
