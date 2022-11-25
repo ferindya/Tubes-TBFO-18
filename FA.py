@@ -1,13 +1,13 @@
-import sys 
+import sys
 import re
 
 # list token untuk syntax ke token
-exp_token = [
+token_exp = [
     (r'[ \t]+',                 None),
-    (r'#[^\n]*',                None),
+    (r'//[^\n]*',                None),
     (r'[\n]+[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\'',  None),
     (r'[\n]+[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"',  None),
-    
+
     # Integer dan String
     (r'\"[^\"\n]*\"',           "STRING"),
     (r'\'[^\'\n]*\'',           "STRING"),
@@ -25,28 +25,16 @@ exp_token = [
     (r'\;',                     "TITIKOMA"),
     (r'\:',                     "TITIKDUA"),
     (r'\n',                     "NEWLINE"),
-    (r'\"',                     "PETIKDUA"),
-    (r'\'',                     "PETIKSATU"),
 
     # Operator
-    (r'\+',                     "ADD"),
-    (r'\-',                     "SUB"),
-    (r'\*',                     "MUL"),
-    (r'/',                      "DIV"),
-    (r'%',                      "MOD"),
     (r'\*\*',                   "POW"),
-    (r'\/\/',                   "FLOORDIV"),
     (r'!',                      "NOT"),
-    (r'\==',                    "ISEQ"),
     (r'<=',                     "LEQ"),
+    (r'<',                      "L"),
     (r'>=',                     "GEQ"),
+    (r'>',                      "G"),
     (r'!=',                     "NEQ"),
-    (r'&&',                     "AND"),
-    (r'||',                     "OR"),
-    (r'^',                      "XOR"),
-    (r'<<',                     "LEFTSHIFT"),
-    (r'>>',                     "RIGHTSHIFT"),
-    (r'>>>',                    "UNRIGHTSHIFT"),
+    (r'\==',                    "ISEQ"),
     (r'\=(?!\=)',               "EQ"),
     (r'\*\*=',                  "POWAS"),
     (r'\+=',                    "ADDAS"),
@@ -55,7 +43,13 @@ exp_token = [
     (r'/=',                     "DIVAS"),
     (r'%=',                     "MODAS"),
     (r'\->',                    "ARROW"),
-    
+    (r'\+\+',                   "INCR"),
+    (r'\-\-',                   "DECR"),
+    (r'\+',                     "ADD"),
+    (r'\-',                     "SUB"),
+    (r'\*',                     "MUL"),
+    (r'/',                      "DIV"),
+    (r'%',                      "MOD"),
     
     # KEYWORD
     (r'\bvar\b',                "VAR"),
@@ -97,26 +91,31 @@ exp_token = [
     (r'\bnull\b',               "NULL"),
     (r'\bfalse\b',              "FALSE"),
     (r'\btrue\b',               "TRUE"),
-    (r'[A-Za-z_][A-Za-z0-9_]*', "ID"),
+    (r'\bfunction\b',           "FUNC"),
     (r'\breturn\b',             "RETURN"),
+    (r'[A-Za-z_][A-Za-z0-9_]*', "ID"),
+    (r'\'\'\'[(?!(\'\'\'))\w\W]*\'\'\'',       "MULTILINE"),
+    (r'\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"',       "MULTILINE"),
+    
 ]
 
-# TEKS KE TOKEN
+
+# teks ke token
 newA = r'[\n]+[ \t]*\'\'\'[(?!(\'\'\'))\w\W]*\'\'\''
 newB = r'[\n]+[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"'
 
-def lexer(text, exp_token):
-    pos = 0
-    currentPos = 0
-    line = 1
+def lexer(teks, token_exp):
+    pos = 0 # posisi karakter pada seluruh potongan teks (absolut)
+    cur = 1 # posisi karakter relatif terhadap baris tempat dia berada
+    line = 1 # posisi baris saat ini
     tokens = []
-    while pos < len(text):
-        if text[pos] == '\n':
-            currentPos = 1
+    while pos < len(teks):
+        if teks[pos] == '\n':
+            cur = 1
             line += 1
         match = None
-        
-        for t in exp_token:
+
+        for t in token_exp:
             pattern, tag = t
             if line == 1:
                 if pattern == newA:
@@ -124,33 +123,32 @@ def lexer(text, exp_token):
                 elif pattern == newB:
                     pattern = r'[^\w]*[ \t]*\"\"\"[(?!(\"\"\"))\w\W]*\"\"\"'
             regex = re.compile(pattern)
-            match = regex.match(text, pos)
+            match = regex.match(teks, pos)
             if match:
                 if tag:
                     token = tag
                     tokens.append(token)
                 break
-            
+
         if not match:
             print("ILLEGAL CHARACTER")
             print("SYNTAX ERROR")
             sys.exit(1)
         else:
             pos = match.end(0)
-        currentPos += 1
+        cur += 1
     return tokens
 
-def createToken(sentence):
+def create_token(sentence):
     file = open(sentence)
     char = file.read()
     file.close()
-    
-    tokens = lexer(char, exp_token)
+
+    tokens = lexer(char,token_exp)
     tokenArray = []
     for token in tokens:
         tokenArray.append(token)
-        
+
     return " ".join(tokenArray)
 
-if __name__ == "__main__":
-    createToken('test.txt')
+print(create_token("file.txt"))
